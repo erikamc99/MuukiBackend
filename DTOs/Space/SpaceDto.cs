@@ -6,23 +6,23 @@ namespace Muuki.DTOs
     {
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required]
-        public string Type { get; set; }
+        public required string Type { get; set; }
     }
 
     public class UpdateSpaceDto
     {
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
     }
 
     public class AddAnimalDto
     {
         [Required]
-        public string Species { get; set; }
+        public required string Species { get; set; }
 
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
@@ -33,7 +33,7 @@ namespace Muuki.DTOs
     public class UpdateAnimalQuantityDto
     {
         [Required]
-        public string AnimalId { get; set; }
+        public required string AnimalId { get; set; }
 
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }

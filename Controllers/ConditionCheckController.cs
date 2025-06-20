@@ -36,13 +36,13 @@ namespace Muuki.Controllers
             foreach (var animal in allAnimals)
             {
                 var setting = await _context.ConditionSettings
-                    .Find(c => c.Type == animal.Type && c.Breed == animal.Breeds.FirstOrDefault())
+                    .Find(c => c.Type == animal.Species && c.Breed == animal.Breeds.FirstOrDefault())
                     .FirstOrDefaultAsync();
 
                 if (setting != null)
                 {
                     idealSettings.Add(setting);
-                    evaluatedAnimals.Add(new { animal.Type, Breed = animal.Breeds.FirstOrDefault() });
+                    evaluatedAnimals.Add(new { animal.Species, Breed = animal.Breeds.FirstOrDefault() });
                 }
             }
 

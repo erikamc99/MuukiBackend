@@ -6,10 +6,10 @@ namespace Muuki.DTOs
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
         [StringLength(30, MinimumLength = 6)]
-        public string Password { get; set; }
+        public required string Password { get; set; }
     }
 }

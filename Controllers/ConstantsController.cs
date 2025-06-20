@@ -16,7 +16,7 @@ namespace Muuki.Controllers
         [HttpGet("animal-types")]
         public IActionResult GetAnimalTypes()
         {
-            return Ok(Constants.AllowedAnimalTypes);
+            return Ok(Constants.AllowedSpecies);
         }
 
         [HttpGet("breeds")]

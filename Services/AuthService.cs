@@ -2,6 +2,7 @@ using Muuki.Models;
 using Muuki.DTOs;
 using Muuki.Data;
 using Muuki.Exceptions;
+using Muuki.Utils;
 using MongoDB.Driver;
 
 namespace Muuki.Services
