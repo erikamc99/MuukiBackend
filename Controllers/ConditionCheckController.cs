@@ -29,20 +29,22 @@ namespace Muuki.Controllers
             if (space == null) return NotFound(new { success = false, message = "Espacio no encontrado", data = (object)null });
 
             var allAnimals = space.Animals;
-
             var idealSettings = new List<ConditionSettings>();
             var evaluatedAnimals = new List<object>();
 
             foreach (var animal in allAnimals)
             {
-                var setting = await _context.ConditionSettings
-                    .Find(c => c.Type == animal.Species && c.Breed == animal.Breeds.FirstOrDefault())
-                    .FirstOrDefaultAsync();
-
-                if (setting != null)
+                foreach (var breed in animal.Breeds)
                 {
-                    idealSettings.Add(setting);
-                    evaluatedAnimals.Add(new { animal.Species, Breed = animal.Breeds.FirstOrDefault() });
+                    var setting = await _context.ConditionSettings
+                        .Find(c => c.Type == animal.Species && c.Breed == breed.Breed)
+                        .FirstOrDefaultAsync();
+
+                    if (setting != null)
+                    {
+                        idealSettings.Add(setting);
+                        evaluatedAnimals.Add(new { animal.Species, Breed = breed.Breed });
+                    }
                 }
             }
 

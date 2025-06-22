@@ -34,7 +34,13 @@ namespace Muuki.Controllers
         public async Task<IActionResult> GetAllAnimals()
         {
             var animals = await _animalService.GetAllAnimals(GetUserId());
-            return Ok(animals);
+            var response = animals.Select(a => new AnimalResponseDto
+            {
+                Species = a.Species,
+                Breeds = a.Breeds,
+                Total = a.Breeds.Sum(b => b.Quantity)
+            }).ToList();
+            return Ok(response);
         }
 
         [HttpGet("{animalId}")]
@@ -42,7 +48,13 @@ namespace Muuki.Controllers
         {
             var animal = await _animalService.GetAnimalById(GetUserId(), animalId);
             if (animal == null) return NotFound();
-            return Ok(animal);
+            var response = new AnimalResponseDto
+            {
+                Species = animal.Species,
+                Breeds = animal.Breeds,
+                Total = animal.Breeds.Sum(b => b.Quantity)
+            };
+            return Ok(response);
         }
 
         [HttpPut("{animalId}")]
@@ -57,6 +69,20 @@ namespace Muuki.Controllers
         {
             await _animalService.DeleteAnimal(GetUserId(), animalId);
             return Ok("Animal eliminado correctamente");
+        }
+
+        [HttpPut("{animalId}/breed")]
+        public async Task<IActionResult> UpdateBreedName(string animalId, [FromBody] BreedDto dto)
+        {
+            var updated = await _animalService.UpdateBreedName(GetUserId(), animalId, dto.OldBreedName, dto.NewBreedName);
+            return Ok(updated);
+        }
+
+        [HttpDelete("{animalId}/breed/{breedName}")]
+        public async Task<IActionResult> DeleteBreed(string animalId, string breedName)
+        {
+            var updated = await _animalService.DeleteBreed(GetUserId(), animalId, breedName);
+            return Ok(updated);
         }
     }
 }
