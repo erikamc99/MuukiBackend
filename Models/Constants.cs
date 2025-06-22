@@ -1,25 +1,18 @@
-namespace Muuki.Models
+public static class Constants
 {
-    public static class Constants
+    public static readonly Dictionary<string, List<string>> AllowedBreedsBySpecies = new()
     {
-        public static readonly List<string> AllowedSpecies = new()
-        {
-            "Gallo",
-            "Gallina",
-            "Pollito"
-        };
+        { "Gallo", new List<string> { "Común", "Pita Pinta Asturiana" } },
+        { "Gallina", new List<string> { "Común", "Pita Pinta Asturiana" } },
+        { "Pollito", new List<string> { "Común", "Pita Pinta Asturiana" } }
+    };
 
-        public static readonly List<string> AllowedSpaceTypes = new()
-        {
-            "Granja",
-            "Corral",
-            "Prao"
-        };
+    public static readonly List<string> AllowedSpecies = AllowedBreedsBySpecies.Keys.ToList();
 
-        public static readonly List<string> DefaultBreeds = new()
-        {
-            "Común",
-            "Pita Pinta Asturiana"
-        };
-    }
+    public static readonly List<string> AllowedSpaceTypes = new()
+    {
+        "Granja",
+        "Corral",
+        "Prao"
+    };
 }

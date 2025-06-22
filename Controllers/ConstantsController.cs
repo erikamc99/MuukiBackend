@@ -22,7 +22,7 @@ namespace Muuki.Controllers
         [HttpGet("breeds")]
         public IActionResult GetBreeds()
         {
-            return Ok(Constants.DefaultBreeds);
+            return Ok(Constants.AllowedBreedsBySpecies);
         }
     }
 }
