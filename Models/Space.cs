@@ -20,7 +20,7 @@ namespace Muuki.Models
 
         [BsonElement("animals")]
         public List<Animal> Animals { get; set; } = new();
-        
+
         [BsonElement("conditions")]
         public List<ConditionEntry> ConditionHistory { get; set; } = new List<ConditionEntry>();
     }

@@ -1,5 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 
 namespace Muuki.Models
 {
@@ -12,9 +13,12 @@ namespace Muuki.Models
         public string Species { get; set; } = string.Empty;
 
         [BsonElement("breeds")]
-        public List<string> Breeds { get; set; } = new();
+        public List<BreedQuantity> Breeds { get; set; } = new();
 
-        [BsonElement("quantity")]
-        public int Quantity { get; set; }
+        public class BreedQuantity
+        {
+            public string Breed { get; set; } = string.Empty;
+            public int Quantity { get; set; }
+        }
     }
 }
