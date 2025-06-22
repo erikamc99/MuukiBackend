@@ -27,7 +27,8 @@ namespace Muuki.DTOs
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
 
-        public List<string> Breeds { get; set; } = new List<string>();
+        [Required]
+        public required string Breed { get; set; }
     }
 
     public class UpdateAnimalQuantityDto
