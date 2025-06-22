@@ -2,7 +2,7 @@
 
 Este proyecto es el **backend** de la aplicación **Muuki**, desarrollada en **C#** y conectada a una base de datos **MongoDB**. 
 Permite gestionar espacios, animales y condiciones ambientales, generando alertas y reportes en tiempo real para el bienestar animal.  
-Está pensada para integrarse con sensores y servir datos a la app móvil desarrollada en React Native.
+Está pensada para integrarse con sensores y servir datos a la [app móvil](https://github.com/erikamc99/MuukiFrontend) desarrollada en React Native.
 
 ---
 
@@ -11,8 +11,8 @@ Está pensada para integrarse con sensores y servir datos a la app móvil desarr
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <url-del-repo-backend>
-cd FinalBackend
+git clone https://github.com/erikamc99/MuukiBackend
+cd MuukiBackend
 ````
 
 ### 2. Instalar dependencias
