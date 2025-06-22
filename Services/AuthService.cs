@@ -38,7 +38,10 @@ namespace Muuki.Services
 
         public async Task<string> Login(LoginDto dto)
         {
-            var user = await _context.Users.Find(u => u.Email == dto.Email).FirstOrDefaultAsync();
+            var user = await _context.Users.Find(
+                u => u.Email == dto.UserOrEmail || u.Username == dto.UserOrEmail
+            ).FirstOrDefaultAsync();
+
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 throw new UnauthorizedException("Credenciales inválidas");
 

@@ -5,8 +5,7 @@ namespace Muuki.DTOs
     public class LoginDto
     {
         [Required]
-        [EmailAddress]
-        public required string Email { get; set; }
+        public required string UserOrEmail { get; set; }
 
         [Required]
         [StringLength(30, MinimumLength = 6)]
