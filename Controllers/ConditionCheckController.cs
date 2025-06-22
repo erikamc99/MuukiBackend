@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Muuki.Models;
 using Muuki.Services;
+using Muuki.DTOs;
 using Muuki.Data;
 using Muuki.Exceptions;
 using MongoDB.Driver;
+using System.Security.Claims;
 
 namespace Muuki.Controllers
 {
@@ -22,15 +24,22 @@ namespace Muuki.Controllers
             _evaluator = evaluator;
         }
 
-        [HttpPost("{spaceId}")]
-        public async Task<IActionResult> CheckSpaceConditions(string spaceId, [FromBody] ConditionEntry currentEntry)
+        private string GetUserId()
         {
-            var space = await _context.Spaces.Find(s => s.Id == spaceId).FirstOrDefaultAsync();
-            if (space == null) return NotFound(new { success = false, message = "Espacio no encontrado", data = (object)null });
+            return User.FindFirstValue("id") ?? throw new UnauthorizedException("Usuario no autenticado");
+        }
+
+        [HttpPost("{spaceId}")]
+        public async Task<IActionResult> CheckSpaceConditions(string spaceId, [FromBody] ConditionEntryDto currentEntryDto)
+        {
+            var userId = GetUserId();
+
+            var space = await _context.Spaces.Find(s => s.Id == spaceId && s.UserId == userId).FirstOrDefaultAsync();
+            if (space == null)
+                return NotFound(new { success = false, message = "Espacio no encontrado", data = (object)null });
 
             var allAnimals = space.Animals;
             var idealSettings = new List<ConditionSettings>();
-            var evaluatedAnimals = new List<object>();
 
             foreach (var animal in allAnimals)
             {
@@ -43,13 +52,12 @@ namespace Muuki.Controllers
                     if (setting != null)
                     {
                         idealSettings.Add(setting);
-                        evaluatedAnimals.Add(new { animal.Species, Breed = breed.Breed });
                     }
                 }
             }
 
             if (!idealSettings.Any())
-                throw new NotFoundException("No hay condiciones ideales en este espacio");
+                throw new NotFoundException("No hay condiciones ideales establecidas");
 
             var avgTempMin = idealSettings.Average(c => c.TemperatureMin);
             var avgTempMax = idealSettings.Average(c => c.TemperatureMax);
@@ -68,15 +76,33 @@ namespace Muuki.Controllers
                 Breed = "Mixed"
             };
 
-            var isOk = _evaluator.IsConditionOk(currentEntry, ideal);
+            var entry = new ConditionEntry
+            {
+                Timestamp = currentEntryDto.Timestamp,
+                Humidity = currentEntryDto.Humidity,
+                Temperature = currentEntryDto.Temperature,
+                Pollution = currentEntryDto.Pollution,
+                FoodKg = currentEntryDto.FoodKg,
+                WaterLiters = currentEntryDto.WaterLiters,
+                FoodFrequencyDays = currentEntryDto.FoodFrequencyDays,
+                WaterFrequencyDays = currentEntryDto.WaterFrequencyDays
+            };
+
+            var (wellbeingScore, alerts) = _evaluator.Evaluate(entry, ideal);
 
             var conditionToSave = new SpaceConditionEntry
             {
                 SpaceId = space.Id,
-                Timestamp = currentEntry.Timestamp,
-                Humidity = currentEntry.Humidity,
-                Temperature = currentEntry.Temperature,
-                Pollution = currentEntry.Pollution
+                Timestamp = entry.Timestamp,
+                Humidity = entry.Humidity,
+                Temperature = entry.Temperature,
+                Pollution = entry.Pollution,
+                FoodKg = entry.FoodKg,
+                WaterLiters = entry.WaterLiters,
+                FoodFrequencyDays = entry.FoodFrequencyDays,
+                WaterFrequencyDays = entry.WaterFrequencyDays,
+                WellbeingScore = wellbeingScore,
+                Alerts = alerts
             };
 
             await _context.SpaceConditions.InsertOneAsync(conditionToSave);
@@ -84,12 +110,11 @@ namespace Muuki.Controllers
             return Ok(new
             {
                 success = true,
-                message = isOk ? "Condiciones ideales" : "Condiciones mejorables",
+                message = alerts.Count == 0 ? "Condiciones ideales" : "Condiciones mejorables",
                 data = new
                 {
-                    isOk,
-                    ideal,
-                    evaluatedAnimals
+                    wellbeingScore,
+                    alerts
                 }
             });
         }
