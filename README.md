@@ -1,84 +1,125 @@
 # 🐔 Muuki - Backend
 
-Este proyecto es el **backend** de la aplicación **Muuki**, desarrollada en **C#** y conectada a una base de datos **MongoDB**. El objetivo es mejorar las condiciones y calidad de vida de los animales, en esta primera versión enfocado en gallinas. Se encarga de gestionar la información recibida de la app frontend y lanzar alertas si se detectan condiciones no óptimas.
+Este proyecto es el **backend** de la aplicación **Muuki**, desarrollada en **C#** y conectada a una base de datos **MongoDB**. 
+Permite gestionar espacios, animales y condiciones ambientales, generando alertas y reportes en tiempo real para el bienestar animal.  
+Está pensada para integrarse con sensores y servir datos a la app móvil desarrollada en React Native.
 
-El frontend correspondiente está disponible en el repositorio de la app móvil Muuki.
+---
 
-## 🚀 Instalación
+## 🚀 Instalación y despliegue rápido
 
 ### 1. Clonar el repositorio
 
 ```bash
 git clone <url-del-repo-backend>
-cd <FinalBackend>
-```
+cd FinalBackend
+````
 
 ### 2. Instalar dependencias
-
-Usa el siguiente comando para instalar todas las dependencias necesarias del proyecto:
 
 ```bash
 dotnet restore
 ```
 
-### 3. Configurar las variables de entorno
-Hay que crear el archivo .env para JWT y la base de datos.
+### 3. Configurar variables de entorno
 
-### 4. Levantar la Base de Datos (MongoDB)
+Crea un archivo `.env` con:
 
-Si no tienes MongoDB instalado localmente, puedes levantarlo fácilmente usando Docker:
+```
+JWT_SECRET=...
+MONGO_URI=mongodb://localhost:27017
+```
+
+> El archivo `.env` no se sube por seguridad.
+
+### 4. Levantar MongoDB con Docker
+
+Si no tienes MongoDB local:
 
 ```bash
 docker run -d -p 27017:27017 --name mongodb -v mongo_data:/data/db mongo
 ```
 
-Esto hará que la base de datos esté disponible en:
-
-```
-mongodb://localhost:27017
-```
-
-### 4. Ejecutar el backend
-
-Para compilar el proyecto:
+### 5. Ejecutar el backend
 
 ```bash
 dotnet build
-```
-
-Para correrlo normalmente en local:
-
-```bash
 dotnet run
 ```
 
-Si necesitas que el backend sea accesible desde fuera de tu red local (por ejemplo, para conexiones móviles o uso de Expo Tunnel en el frontend), correlo así:
+O para exponer en tu red local (por ejemplo, para usar desde Expo Go):
 
 ```bash
 dotnet run --urls "http://0.0.0.0:5098"
 ```
 
-> 💡 Asegúrate de que el puerto configurado coincida con el que uses en la app frontend (Muuki) en el archivo `api.js`.
+---
 
-## 📱 Tecnologías Utilizadas
+## 📱 Tecnologías principales
 
-- C# (.NET)
-- MongoDB
-- Docker
-- Postman (pruebas de conexión)
-- Swagger
+* **.NET 8 (C#)**
+* **MongoDB**
+* **Docker**
+* **Swagger** (documentación interactiva)
+* **Postman** (pruebas de API)
+* **JWT** (autenticación)
 
-## 📋 Funcionalidades principales
+---
 
-- Recepción y almacenamiento de datos ambientales
-- Análisis de condiciones y generación de alertas
-- API RESTful para comunicación con la app frontend
+## 📚 Documentación de la API
 
-## ✨ Estado del proyecto
+* Consulta todos los endpoints, parámetros y ejemplos de uso aquí:
+  👉 [Wiki Lista y explicación de endpoints](https://github.com/erikamc99/MuukiBackend/wiki/Lista-y-explicaci%C3%B3n-de-endpoints)
 
-- Primera versión enfocada en gallinas 🐔
-- Planeadas mejoras para soportar más especies y nuevas lógicas de análisis
+* Colección de Postman lista para importar:
+  👉 [Wiki Colección de Postman](https://github.com/erikamc99/MuukiBackend/wiki/Colecci%C3%B3n-de-Postman)
 
-## 📄 Licencia
+* Swagger UI (corriendo el backend):
 
-Este proyecto es de uso personal para fines educativos.
+  * [http://localhost:5098/swagger](http://localhost:5098/swagger)
+
+---
+
+## 🧪 Testing y pruebas
+
+1. Importa la colección de Postman incluida para probar todos los endpoints con ejemplos ya cargados.
+2. Usa Swagger UI para explorar y probar la API desde el navegador.
+
+---
+
+## 📦 Estructura del proyecto
+
+```
+FinalBackend/
+├── Controllers/      # Lógica de endpoints
+├── Models/           # Modelos y entidades de negocio
+├── DTOs/             # Objetos de transferencia de datos
+├── Services/         # Lógica de negocio y acceso a datos
+├── Data/             # Conexión a MongoDB
+├── Properties/       # Configuración
+├── Utils/            # Utilidades reutilizables: helpers para JWT, manejo de tokens y excepciones personalizadas usadas en todo el proyecto
+├── Program.cs        # Entry point
+├── appsettings.json  # Configuración de la app
+└── ...otros archivos
+```
+
+---
+
+## ⚙️ Variables de entorno
+
+* `JWT_SECRET`: Secreto para generación y validación de tokens JWT
+* `MONGO_URI`: Cadena de conexión a MongoDB
+
+---
+
+## 🤝 Contribuciones
+
+1. Haz fork de este repo
+2. Crea una branch (`feature/nueva-funcionalidad`)
+3. Abre un Pull Request
+
+---
+
+## 📝 Licencia
+
+Este proyecto es de uso personal y educativo.
