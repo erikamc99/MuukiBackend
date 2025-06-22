@@ -1,44 +1,45 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.IdentityModel.Tokens;
 using Muuki.Models;
 
 namespace Muuki.Utils
 {
     public class JwtUtils
     {
-        private readonly IConfiguration _config;
+        private readonly string JWT_SECRET;
 
         public JwtUtils(IConfiguration config)
         {
-            _config = config;
+            JWT_SECRET = config["JWT_SECRET"] ?? throw new Exception("No se encontró la clave JWT en las variables de entorno");
         }
 
         public string GenerateToken(User user)
         {
-            var secret = Environment.GetEnvironmentVariable("JWT_SECRET");
-            if (string.IsNullOrEmpty(secret))
-            {
-                throw new Exception("La clave JWT no está configurada en las variables de entorno.");
-            }
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(JWT_SECRET);
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[] 
+            var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim("id", user.Id.ToString()),
+                new Claim("username", user.Username),
+                new Claim("email", user.Email)
             };
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddDays(7),
-                signingCredentials: creds);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature
+                )
+            };
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }
