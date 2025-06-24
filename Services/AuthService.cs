@@ -18,7 +18,18 @@ namespace Muuki.Services
             _jwt = jwt;
         }
 
-        public async Task<string> Register(RegisterDto dto)
+        private UserDto ToUserDto(User user)
+        {
+            return new UserDto
+            {
+                Id = user.Id.ToString(),
+                Username = user.Username,
+                Name = user.Name,
+                Email = user.Email
+            };
+        }
+
+        public async Task<AuthResponseDto> Register(RegisterDto dto)
         {
             var exists = await _context.Users.Find(u => u.Email == dto.Email).FirstOrDefaultAsync();
             if (exists != null) throw new BadRequestException("Usuario ya registrado");
@@ -33,10 +44,16 @@ namespace Muuki.Services
             };
 
             await _context.Users.InsertOneAsync(user);
-            return _jwt.GenerateToken(user);
+            var token = _jwt.GenerateToken(user);
+
+            return new AuthResponseDto
+            {
+                Token = token,
+                User = ToUserDto(user)
+            };
         }
 
-        public async Task<string> Login(LoginDto dto)
+        public async Task<AuthResponseDto> Login(LoginDto dto)
         {
             var user = await _context.Users.Find(
                 u => u.Email == dto.UserOrEmail || u.Username == dto.UserOrEmail
@@ -45,7 +62,13 @@ namespace Muuki.Services
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 throw new UnauthorizedException("Credenciales inválidas");
 
-            return _jwt.GenerateToken(user);
+            var token = _jwt.GenerateToken(user);
+
+            return new AuthResponseDto
+            {
+                Token = token,
+                User = ToUserDto(user)
+            };
         }
 
         public async Task<User> GetProfile(string userId)

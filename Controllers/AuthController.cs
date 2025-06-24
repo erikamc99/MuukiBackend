@@ -20,16 +20,16 @@ namespace Muuki.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            var token = await _auth.Register(dto);
-            return Ok(new { token });
+            var result = await _auth.Register(dto);
+            return Created(string.Empty, result);
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var token = await _auth.Login(dto);
-            return Ok(new { token });
+            var result = await _auth.Login(dto);
+            return Ok(result);
         }
     }
 }
